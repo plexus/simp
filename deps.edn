@@ -1,0 +1,6 @@
+{:paths ["src"]
+ :deps
+ {io.github.tonsky/toml-clj {:mvn/version "0.1.0"}
+  hato/hato                 {:mvn/version "1.0.0"}
+  com.cnuernber/charred     {:mvn/version "1.041"}
+  com.lambdaisland/cli      {:mvn/version "1.30.130"}}}
