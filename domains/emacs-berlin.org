@@ -1,0 +1,20 @@
+[emacs-berlin.org]
+A="185.199.108.153"
+A="185.199.109.153"
+A="185.199.110.153"
+A="185.199.111.153"
+MX="mx.mailb.org" priority=10
+TXT="v=spf1 a mx ip4:138.201.70.161 ip6:2a01:4f8:173:14c3:1::161 ip4:217.197.83.166 ip6:2001:67c:1400:2140::1 include:_spf.google.com -all"
+
+[galene.emacs-berlin.org]
+A="188.245.194.152" ttl=600
+AAAA="2a01:4f8:c013:75bb::1" ttl=600
+
+[jitsi.emacs-berlin.org]
+A="188.245.77.190" ttl=600
+AAAA="2a01:4f8:1c1b:8253::1" ttl=600
+
+
+# Local Variables:
+# mode:conf
+# End:

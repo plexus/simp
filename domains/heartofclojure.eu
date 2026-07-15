@@ -1,0 +1,48 @@
+[heartofclojure.eu]
+A="194.182.170.70" ttl=60
+MX="mx1.mailchannels.net" priority=0
+MX="mx2.mailchannels.net" priority=0
+
+[2019.heartofclojure.eu]
+ALIAS="heartofclojure.github.io"
+TXT="ALIAS for heartofclojure.github.io"
+
+[2024.heartofclojure.eu]
+ALIAS="heartofclojure.github.io"
+TXT="ALIAS for heartofclojure.github.io"
+
+[activities.heartofclojure.eu]
+CNAME="enigmatic-stonecrop-uvg52hkj555vfg37hwet3djp.herokudns.com"
+
+[cfp.heartofclojure.eu]
+CNAME="cfp.apps.gaiwan.co" ttl=60
+
+[compass.heartofclojure.eu]
+A="159.100.242.109" ttl=600
+AAAA="2a04:c43:e00:5d3b:4f6:2cff:fe00:612"
+
+[email.mailgun.heartofclojure.eu]
+CNAME="mailgun.org"
+
+[k1._domainkey.mailgun.heartofclojure.eu]
+TXT="k=rsa; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDULIPIiGtf2c4Hv63xd3t6rwoyEzOdLEhR0YNlupqywVVryD7Is73I47wh5CKNkjiwEN5pp2j5Q9MRk7yM+kZegNthZcidFwhbVgxLGXNf+3LLdK7fXoH4TJG//ccG5+2QvqPIyKvHBrNAW+H5WCUuRjDQ+6T0qwD9oH85McufSwIDAQAB"
+
+[mail.heartofclojure.eu]
+NS="ns1.dreamhost.com"
+
+[mailboxes.heartofclojure.eu]
+NS="ns1.dreamhost.com"
+
+[mailgun.heartofclojure.eu]
+TXT="v=spf1 include:mailgun.org ~all"
+
+[webmail.heartofclojure.eu]
+NS="ns1.dreamhost.com"
+
+[www.heartofclojure.eu]
+CNAME="heartofclojure.eu" ttl=60
+
+
+# Local Variables:
+# mode:conf
+# End:

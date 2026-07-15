@@ -1,0 +1,27 @@
+[clojurebridge-berlin.org]
+ALIAS="clojurebridge-berlin.github.io"
+MX="mxa.mailgun.org" priority=10
+MX="mxb.mailgun.org" priority=10
+TXT="v=spf1 include:mailgun.org ~all"
+
+[email.clojurebridge-berlin.org]
+MX="mxa.mailgun.org" priority=10
+MX="mxb.mailgun.org" priority=10
+TXT="v=spf1 include:mailgun.org ~all"
+
+[email.email.clojurebridge-berlin.org]
+CNAME="mailgun.org"
+
+[mailo._domainkey.email.clojurebridge-berlin.org]
+TXT="k=rsa; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCvYENUcvZHxalP+uIKPAUqVAdOTH1q2szS/jY+/lmHaO3cn+m7NprdskJ1HGt3SB1TA4yR0zUeaaaLrVFdmRkwTkQm35qM1SNkEoX8ZDVPu5xGHqmwu1cl4a+cq5+K/Qx3r2WYluNzK9A2u4Lh2ytJzXnsVWzPKZPv/eBqr+rL/wIDAQAB"
+
+[mx._domainkey.clojurebridge-berlin.org]
+TXT="k=rsa; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCvXFL8ljyPwGGmct6QpE7h5dyx/MkFpRcBnPzFmiQeOrnS4C8547YkhkpAMmTtdt649RCo75i+d7sgYRmAbMbGG0AMZ2SD//CdGR25skEtJnCLLaMTHCzKgazPX7Zg6fx1BqFkoOiWBe/4YHQl4apG+JCxWrYJqhlLKSW3cskT/QIDAQAB"
+
+[www.clojurebridge-berlin.org]
+ALIAS="clojurebridge-berlin.github.io"
+
+
+# Local Variables:
+# mode:conf
+# End:

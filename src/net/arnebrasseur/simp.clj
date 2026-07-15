@@ -10,7 +10,7 @@
    (java.nio.file Files Paths)
    (java.nio.file.attribute PosixFilePermissions)))
 
-(require 'net.arnebrasseur.hato-charred)
+(require 'net.arnebrasseur.simp.hato-charred)
 
 (defn config-file-path []
   (io/file

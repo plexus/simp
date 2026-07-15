@@ -1,0 +1,12 @@
+[discuss.piglet-lang.org]
+A="50.116.63.241"
+TXT="v=spf1 a mx include:_spf.emwd.com ~all"
+
+[playground.piglet-lang.org]
+A="85.9.208.141"
+AAAA="2a04:3544:1000:1510:cc10:b0ff:fee4:532f"
+
+
+# Local Variables:
+# mode:conf
+# End:

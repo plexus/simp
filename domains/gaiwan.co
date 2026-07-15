@@ -1,0 +1,168 @@
+[gaiwan.co]
+A="194.182.170.70" ttl=60
+MX="in1-smtp.messagingengine.com" priority=0
+MX="in2-smtp.messagingengine.com" priority=0
+TXT="clojars plexus"
+TXT="google-site-verification=9oFnNeM1djNUF69Cbb_UgIVjyFu3EwXpnEC2WFeFMBo" ttl=300
+TXT="google-site-verification=LGMAXDoUosdkzt1S94cyAcWEdP46ZGuvWB0Q4sR_iYg" ttl=300
+TXT="v=spf1 include:spf.messagingengine.com ?all"
+
+[*.apps.gaiwan.co]
+A="194.182.170.70" ttl=60
+
+[*.frp.apps.gaiwan.co]
+A="194.182.170.70" ttl=60
+
+[_acme-challenge.frp.apps.gaiwan.co]
+TXT="19S-P9eFQru1E80uWO8c-vgmdmeZLlQYll9iNr_mY-s" ttl=60
+TXT="5B-bunUoPXhBNO2_Yfk6NtM4ZSQFDn8T5CIpTtNjVWw" ttl=60
+TXT="6pP8oER7u-IkkNsEQKEGxHhw9SZ37afIkdnkGUA84o4" ttl=60
+TXT="7jr_F0Ro2QmM5rtf-3fE6N275minkjIOjZt__TNNq3U" ttl=60
+TXT="CBqnH2pVwV2beo-fX2vfMGTqLf4p-ichkIhJBfxD_kA" ttl=60
+TXT="FX93Z2X0GNzDK7_ILi144r19bCoCijWHlnQWNyS8h6k" ttl=60
+TXT="INcbr7WkBYdhqnMuygE0opCtOHVo_Ig6dRFaV6lQP_c" ttl=60
+TXT="KhBJ8TvzK94Y7h42QV5O5uRG594oT4uFtqJ6-bWIRcw" ttl=60
+TXT="PfM0T4P1h3EwyfDsiyF5mTSEwo96nPIIiKhJSDupSvw" ttl=60
+TXT="Qw_1TtG79tLcZ5PxYU6mUqHVeexy6M5zPghZdUoVpnw" ttl=60
+TXT="ScjDC14QbW7BD0UK7LLiqCFMzfuv1v64XOaQA4uR5Y0" ttl=60
+TXT="ULBW4xJ1KknsJvLDNdA0tjy7Ivwc7PC4lVQr3dd8U18" ttl=60
+TXT="UrkkqNsrxHxr_DG_rrSeX1HH4eumt1pdb1vItLqPVRE" ttl=60
+TXT="VUKEBUdqjvT7j7awANUk1Is028Tgm8SaLu4OlCKoc_M" ttl=60
+TXT="Z8HnLcCh2B6fUzjBQo2vkKzdevMVONNU3htYeHYTaCI" ttl=60
+TXT="Zj0HB4ltk04xMCNiZ_XbfqTqPGsKjglZtR7AOZl3JYU" ttl=60
+TXT="ZzLCdywrvXhSN8CDAtHuuVeDni097t1Wv-_l7TN2hOc" ttl=60
+TXT="_1fv_Z08IA03YhwtBgagjbVpnZlJfZXnEL4qIeAhLKo" ttl=60
+TXT="_uRPcgBMtwsxaaQ2msHXZ-3dCUrOU0OzKSJ127wzB7Y" ttl=60
+TXT="dTW6z-ce6q53HZNxZqP37LKl_ahFKIpV7ixWaH9W96c" ttl=60
+TXT="dWAFELy5uL_4QsLJLGURa2oEmlD9SsDjMrC8bobDxhM" ttl=60
+TXT="gIKJGq0VviGNU2HsqRLj1o503Mr-Y56YFJzKLsh7zsA" ttl=60
+TXT="g_DjpmMpBvleG1kO0rxIGvA4NVCwnLpJF05x9S_h8Aw" ttl=60
+TXT="itvd7-K0gozSJcXzKh2Syq_lr5Z-83BT9Jg88uGMEaE" ttl=60
+TXT="lW8s-CCZaYkLxNTflGSgqyIK0i1abIgUZ-_zyTZG_9s" ttl=60
+TXT="oXKn5sppc_eQ-dc0ZhRcmjcYh2MnK__PCAYhfm0CF4M" ttl=60
+TXT="rgtTD4Z9JhK_FsnEPmzur1ENR6Fu24ZqHD4-oP8SM_k" ttl=60
+TXT="vkEi-dJ8u15Syt0qTmx7VlR60dWfKzXAMkW2Tgp5viA" ttl=60
+
+[_acme-challenge.humble-staging.gaiwan.co]
+CNAME="94fee199-71fa-4ae8-8270-a08d70e25208.3.authorize.certificatemanager.goog" ttl=60
+
+[_acme-challenge.humble-staging2.gaiwan.co]
+CNAME="589c62c2-98d2-481c-84e7-2f9a0fda776e.18.authorize.certificatemanager.goog" ttl=60
+
+[_dmarc.gaiwan.co]
+TXT="v=DMARC1;p=none;sp=none;pct=100;fo=1"
+
+[_dmarc.git.gaiwan.co]
+TXT="v=DMARC1; p=none; pct=100; fo=1; ri=3600; rua=mailto:edd31014@dmarc.mailgun.org,mailto:e1f0c18c@inbox.ondmarc.com; ruf=mailto:edd31014@dmarc.mailgun.org,mailto:e1f0c18c@inbox.ondmarc.com;"
+
+[_dmarc.id.gaiwan.co]
+TXT="v=DMARC1; p=none; pct=100; fo=1; ri=3600; rua=mailto:edd31014@dmarc.mailgun.org,mailto:e1f0c18c@inbox.ondmarc.com; ruf=mailto:edd31014@dmarc.mailgun.org,mailto:e1f0c18c@inbox.ondmarc.com;" ttl=60
+
+[acme-challenges.gaiwan.co]
+NS="ns-cloud-a1.googledomains.com" ttl=300
+NS="ns-cloud-a2.googledomains.com" ttl=300
+NS="ns-cloud-a3.googledomains.com" ttl=300
+NS="ns-cloud-a4.googledomains.com" ttl=300
+
+[apr.gaiwan.co]
+A="161.35.245.209" ttl=60
+
+[apr-staging.gaiwan.co]
+A="167.71.75.163" ttl=60
+
+[apr3.gaiwan.co]
+A="161.35.245.209" ttl=60
+
+[autoconfig.gaiwan.co]
+CNAME="autoconfig.dreamhost.com"
+
+[blog.gaiwan.co]
+A="194.182.170.70" ttl=60
+
+[does.gaiwan.co]
+A="35.233.197.172" ttl=60
+
+[does-jesque.gaiwan.co]
+A="35.199.186.192" ttl=60
+
+[does-player.gaiwan.co]
+A="34.120.248.86" ttl=60
+
+[email._domainkey.mailgun.gaiwan.co]
+TXT="k=rsa; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC3o58UpmqGS9kvdmBX94eh66dEXbnURAVNeS3CD7KkajxjTMUjmF/fYXHtCC8VXm6wktWsLRzn0pEJCFYGDNeKkhZ0ALqWpV8OyW6PoVlriJ9YMPoFmejOHDWNxsNdWeSgWarzk0BmsziQ6YaGBTnEP65Pap3zVVPSwKeLf5RQfwIDAQAB" ttl=300
+
+[email.mailgun.gaiwan.co]
+CNAME="eu.mailgun.org" ttl=300
+
+[filebak.gaiwan.co]
+A="194.182.170.70"
+
+[fm1._domainkey.gaiwan.co]
+CNAME="fm1.gaiwan.co.dkim.fmhosted.com"
+
+[fm2._domainkey.gaiwan.co]
+CNAME="fm2.gaiwan.co.dkim.fmhosted.com"
+
+[fm3._domainkey.gaiwan.co]
+CNAME="fm3.gaiwan.co.dkim.fmhosted.com"
+
+[git.gaiwan.co]
+A="194.182.169.65" ttl=60
+AAAA="2a04:c46:e00:5d3b:41f:ceff:fe00:470"
+TXT="v=spf1 include:mailgun.org ~all"
+
+[humble-staging.gaiwan.co]
+A="34.128.145.10" ttl=60
+AAAA="2600:1901:0:3845::" ttl=60
+
+[humble-staging2.gaiwan.co]
+A="34.128.145.10" ttl=60
+AAAA="2600:1901:0:3845::" ttl=60
+
+[id.gaiwan.co]
+A="194.182.169.65" ttl=60
+AAAA="2a04:c46:e00:5d3b:41f:ceff:fe00:470" ttl=60
+TXT="v=spf1 include:mailgun.org ~all"
+
+[itrev-video-library.gaiwan.co]
+A="34.49.42.79" ttl=60
+
+[mailgun.gaiwan.co]
+MX="mxa.eu.mailgun.org" ttl=300 priority=0
+MX="mxb.eu.mailgun.org" ttl=300 priority=0
+TXT="v=spf1 include:mailgun.org ~all" ttl=300
+
+[mta._domainkey.git.gaiwan.co]
+TXT="k=rsa; p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA02m8bNWcVK3Hsufu+etAeYUKDI8lJJP+R+p7rA+SfGQNOsmv+HhLNvfqh8jEDeac8nyVyrPT+r5g63nizXZx8zA/wG9HG3VrMnhOXi9IyPx5Dlznc3UnXabqHIfxbFFNf3gXONP2vbfOR2tYpuAx7d+XW2A3Koxgw2GMGFxrlEkuaETu0PhmvEYFjn71gMYGHaTFO6QN4LT2f8LuUNuJIETa7Na3Bax513dyEJYttVLVD2tC1QoIDdMwCxRY1MsQuzgjpXSjC8RsFi7B+qrptOgZfphNiXeBiP0VozwqjCmVotEFhTgSKSOQOL7L+E3x9Nyy8f6z/gSNsBA9XRg7owIDAQAB"
+
+[s1._domainkey.id.gaiwan.co]
+TXT="k=rsa; p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAslKkUjv8PsN40rHdMgQYnJNTchofeDtRE7Ake8cudJA4M9eW/kvN2Kes7onYwykiOaT0P61ZP7kr4DWSZ8TB4xg37EGZMyju18OzfQgEraRge2RTagCryZVEp7mdqSpziB5J2NEfCpMs+SH3A8cDdMirSwb8TnJwtQ7+c62hBD1YbpVORQpCxqG/uPcZDeI0HNA8pvlRxXLnxdxeK4awQm/x61r5YFq4+BEP94qk4RtN+vr8lCjN4H/V9icshVbdObkHB9ETR799vT3AZmFZWnYwXnBgar3q+QucaKj/5yKIhLUUuiZZNSfagTu6vuE61as9Kh8fXpxnhfodGAtuOwIDAQAB"
+
+[slack-widgets.gaiwan.co]
+A="34.117.158.102" ttl=60
+
+[slack-widgets-rise8.gaiwan.co]
+A="35.186.224.203" ttl=60
+
+[staging-itrev-video-library.gaiwan.co]
+A="35.227.248.26" ttl=60
+
+[video-library-test.gaiwan.co]
+A="35.190.86.179" ttl=60
+
+[videolibrary.gaiwan.co]
+A="34.149.157.78" ttl=60
+
+[videolibrarystaging.gaiwan.co]
+A="199.36.158.100" ttl=60
+
+[webmail.gaiwan.co]
+NS="ns1.dreamhost.com"
+
+[www.gaiwan.co]
+CNAME="gaiwan.co" ttl=60
+
+
+# Local Variables:
+# mode:conf
+# End:
