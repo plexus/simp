@@ -1,3 +1,6 @@
+[piglet-lang.org]
+TXT="clojars plexus"
+
 [discuss.piglet-lang.org]
 A="50.116.63.241"
 TXT="v=spf1 a mx include:_spf.emwd.com ~all"

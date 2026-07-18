@@ -1,0 +1,4 @@
+[magpie.software]
+TXT="clojars plexus"
+MX="mx1.mailchannels.net" priority=10
+MX="mx2.mailchannels.net" priority=10
