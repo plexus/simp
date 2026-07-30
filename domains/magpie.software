@@ -1,4 +1,4 @@
 [magpie.software]
-TXT="clojars plexus"
+ALIAS="plexus.github.io"
 MX="mx1.mailchannels.net" priority=10
 MX="mx2.mailchannels.net" priority=10
