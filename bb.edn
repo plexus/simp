@@ -1,3 +1,3 @@
 {:deps
- {com.lambdaisland/launchpad {:mvn/version "0.53.238-alpha"}
+ {com.lambdaisland/launchpad {:mvn/version "0.54.242-alpha"}
   net.arnebrasseur/simp {:local/root "."}}}

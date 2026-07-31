@@ -3,23 +3,23 @@
   (:require
    [clojure.java.io :as io]
    [clojure.string :as str]
-   [hato.client :as hato]
    [lambdaisland.cli :as cli]
-   [toml-clj.core :as toml])
+   [toml-clj.core :as toml]
+   [net.arnebrasseur.simp.protocols :as protocols]
+   [net.arnebrasseur.simp.dnsimple]
+   [net.arnebrasseur.simp.dreamhost])
   (:import
    (java.nio.file Files Paths)
    (java.nio.file.attribute PosixFilePermissions)))
 
 (require 'net.arnebrasseur.simp.hato-charred)
 
+;;; Config
+
 (defn config-file-path []
   (io/file
    (or (System/getenv "XDG_CONFIG_HOME")
        (io/file (System/getProperty "user.home") ".config/simp/config.toml"))))
-
-(defn read-config [cfg-path]
-  (with-open [rdr (io/reader cfg-path)]
-    (toml/read rdr {:key-fn keyword})))
 
 (defn ensure-config [cfg-path]
   (when-not (.exists cfg-path)
@@ -29,17 +29,35 @@
    (Paths/get (str cfg-path) (into-array String []))
    (PosixFilePermissions/fromString "rw-------")))
 
-(def init
-  {:verbosity 0
-   :base-url "https://api.dnsimple.com/v2"
-   :dnsimple/token
-   (let [cfg-path (doto (config-file-path) ensure-config)
-         cfg      (read-config cfg-path)
-         token    (str (-> cfg :dnsimple :access_token))]
-     (when-not (str/starts-with? token "dnsimple_")
-       (println "Set up your dnsimple access token in" cfg-path)
-       (System/exit -1))
-     token)})
+(defn get-account-cfg [config account-name]
+  (let [{:keys [accounts default]} config
+        name (or (keyword account-name) account-name (keyword default))]
+    (or (get accounts (keyword name))
+        (get accounts name)
+        (do (println (str "Account not found: " account-name))
+            (System/exit -1)))))
+
+;;; CLI init
+
+(defn read-config []
+  (let [cfg-path        (doto (config-file-path) ensure-config)
+        raw-cfg         (with-open [rdr (io/reader cfg-path)]
+                          (toml/read rdr {:key-fn keyword}))
+        accounts        (into {}
+                              (map (fn [[account-name account-cfg]]
+                                     (let [provider (keyword (or (:provider account-cfg)
+                                                                 (name account-name)))]
+                                       [account-name
+                                        (assoc account-cfg
+                                               :provider provider
+                                               :account account-name)])))
+                              raw-cfg)
+        default-account (some (fn [[name cfg]] (when (:default cfg) name)) accounts)]
+    (assert default-account)
+    {:accounts accounts
+     :default  default-account}))
+
+;;; HTTP helpers (for general use, not provider-specific)
 
 (defn debug [& args]
   (when (< 0 (:verbosity cli/*opts*))
@@ -49,61 +67,9 @@
   (when (< 1 (:verbosity cli/*opts*))
     (apply println args)))
 
-(defn fetch [path & [opts]]
-  (let [req (merge
-             {:url (str (:base-url init) (if (vector? path)
-                                           (str "/" (str/join "/" path))
-                                           path))
-              :request-method :get
-              :content-type :json
-              :as :auto
-              :headers {"Content-Type" "application/json"
-                        "Authorization" (str "Bearer " (:dnsimple/token init))}}
-             opts)]
-    (debug (str/upper-case (name (:request-method req))) (:url req))
-    (when-let [params (:form-params req)]
-      (trace params))
-    (hato/request req)))
+;;; Record rendering / domain file serialization
 
-(defn fetch-coll [path & [opts]]
-  (let [url                       (if (vector? path)
-                                    (str "/" (str/join "/" path))
-                                    path)
-        {:keys [body]}            (fetch (str url "?per_page=100") opts)
-        {:keys [data pagination]} body]
-    (loop [coll  data
-           total (:total_pages pagination)
-           page  (:current_page pagination)]
-      (if (= page total)
-        coll
-        (let [{:keys [body]}            (fetch (str url "?per_page=100&page=" (inc page)))
-              {:keys [data pagination]} body]
-          (recur
-           (concat coll data)
-           (:total_pages pagination)
-           (:current_page pagination)))))))
-
-(defn normalize-content [content]
-  (if (and (str/starts-with? content "\"")
-           (str/ends-with? content "\""))
-    (str/replace (subs content 1 (dec (count content)))
-                 #"\\\"" "\"")
-    content))
-
-(defn fetch-all-records [account-id]
-  (reduce
-   (fn [acc {zone-id :id zone-name :name}]
-     (reduce
-      (fn [acc {:keys [zone_id type name content ttl system_record] :as entry}]
-        (if system_record
-          acc
-          (conj acc (update entry :content normalize-content))))
-      acc
-      (fetch-coll [account-id "zones" zone-id "records"])))
-   []
-   (fetch-coll [account-id "zones"])))
-
-(defn render-line [{:keys [type content ttl priority] :as record}]
+(defn render-line [{:keys [type content ttl priority]}]
   (str type "=" (pr-str content)
        (when (and (not (nil? ttl))
                   (not= 3600 ttl))
@@ -118,30 +84,27 @@
          (str name "." zone))
        "]"))
 
-(defn domain-file-contents [entries]
-  (str
-   (str/join
-    "\n\n"
-    (for [[name records] (into (sorted-map) (group-by :name entries))]
-      (str (section-str (:zone_id (first records)) name) "\n"
-           (str/join
-            "\n"
-            (for [record (sort-by (juxt :type :content) records)]
-              (render-line record))))))
-   "\n\n\n# Local Variables:\n# mode:conf\n# End:\n"))
+(defn domain-file-contents [account-name entries]
+  (str "[simp]\n"
+       "account=" (pr-str (name account-name)) "\n"
+       "\n"
+       (str/join
+        "\n\n"
+        (for [[name records] (into (sorted-map) (group-by :name entries))]
+          (str (section-str (:zone (first records)) name) "\n"
+               (str/join
+                "\n"
+                (for [record (sort-by (juxt :type :content) records)]
+                  (render-line record))))))
+       "\n\n\n# Local Variables:\n# mode:conf\n# End:\n"))
 
-(defn recreate-domain-files! [dir records]
-  (.mkdirs (io/file dir))
-  (doseq [[zone entries] (group-by :zone_id records)]
-    (debug "Writing" (str (io/file dir zone)))
-    (spit (io/file dir zone)
-          (domain-file-contents entries))))
+;;; Domain file parsing
 
 (defn parse-line [line]
   (let [[_ type rest] (re-find #"([A-Z]+)=(.*)" line)
         rdr           (java.io.PushbackReader. (java.io.StringReader. rest))
-        content       (read rdr) ; read value as a clojure string
-        rest          (first (.toList (.lines (java.io.BufferedReader. rdr)))) ; remaining portion of the line
+        content       (read rdr)
+        rest          (first (.toList (.lines (java.io.BufferedReader. rdr))))
         kvs           (when rest
                         (into {}
                               (map #(str/split % #"="))
@@ -158,53 +121,68 @@
 
 (defn parse-domain-file [zone]
   (let [lines (str/split (slurp (io/file "domains" zone)) #"\R")]
-    (loop [acc []
+    (loop [simp-meta {}
+           records []
            section nil
            [line & lines] lines]
       (if-not line
-        acc
+        {:account (:account simp-meta)
+         :zone    zone
+         :records records}
         (cond
           (re-find #"^(\s*|\s*#.*)$" line)
-          (recur acc section lines)
+          (recur simp-meta records section lines)
 
           (re-find #"^\s*\[(.*)\]\s*($|#.*$)" line)
-          (let [[_ section] (re-find #"^\s*\[(.*)\]\s*($|#.*$)" line)]
-            (if (= zone section)
-              (recur acc "" lines)
-              (recur acc (subs section 0 (- (count section) (count zone) 1)) lines)))
+          (let [[_ sec-name] (re-find #"^\s*\[(.*)\]\s*($|#.*$)" line)]
+            (cond
+              (= "simp" sec-name)
+              (recur simp-meta records "simp" lines)
+
+              (= zone sec-name)
+              (recur simp-meta records "" lines)
+
+              :else
+              (recur simp-meta records
+                     (subs sec-name 0 (- (count sec-name) (count zone) 1))
+                     lines)))
+
+          (= section "simp")
+          (let [[_ k v] (re-find #"^\s*([a-z_]+)\s*=\s*(.*)" line)]
+            (if k
+              (recur (assoc simp-meta (keyword k) (try (read-string v) (catch Exception _ v)))
+                     records section lines)
+              (recur simp-meta records section lines)))
 
           :else
-          (recur
-           (conj acc (assoc (parse-line line)
-                            :name section
-                            :zone_id zone))
-           section
-           lines))))))
+          (recur simp-meta
+                 (conj records (assoc (parse-line line) :name section :zone zone))
+                 section
+                 lines))))))
+
+(defn parse-domain-files [directory]
+  (mapv #(parse-domain-file (.getName %)) (next (file-seq (io/file directory)))))
+
+;;; Diff
 
 (defn minimal-record [record]
-  (cond-> (select-keys record [:name :content :type :ttl :priority :zone_id])
+  (cond-> (select-keys record [:name :content :type :ttl :priority :zone])
     (= 3600 (:ttl record))
     (dissoc :ttl)
     (nil? (:priority record))
     (dissoc :priority)))
 
-(defn parse-domain-files [directory]
-  (mapcat #(parse-domain-file (.getName %)) (next (file-seq (io/file directory)))))
-
-(defn get-account-id []
-  (:id (:account (:data (:body (fetch "/whoami"))))))
-
-(def rec-comp "Record comparator function" (juxt :zone_id :name :type))
+(def rec-comp "Record comparator function" (juxt :zone :name :type))
 
 (defn diff [dr fr]
   (let [drg (update-vals (group-by rec-comp dr) #(sort-by (juxt rec-comp :content) %))
         frg (update-vals (group-by rec-comp fr) #(sort-by (juxt rec-comp :content) %))]
     (reduce
      (fn [acc k]
-       (let [orig'(get drg k)
-             new' (get frg k)
-             orig (vec (remove (fn [o] (some #(= (minimal-record o) %) new')) orig'))
-             new  (vec (remove (fn [n] (some #(= (minimal-record %) n) orig')) new'))]
+       (let [orig' (get drg k)
+             new'  (get frg k)
+             orig  (vec (remove (fn [o] (some #(= (minimal-record o) %) new')) orig'))
+             new   (vec (remove (fn [n] (some #(= (minimal-record %) n) orig')) new'))]
          (if (= orig new)
            acc
            (reduce
@@ -215,25 +193,17 @@
                   (= (minimal-record o) n)
                   acc
                   (nil? o)
-                  (update-in acc [(:zone_id n) :added] (fnil conj []) n)
+                  (update-in acc [(:zone n) :added] (fnil conj []) n)
                   (nil? n)
-                  (update-in acc [(:zone_id o) :removed] (fnil conj []) o)
+                  (update-in acc [(:zone o) :removed] (fnil conj []) o)
                   :else
-                  (update-in acc [(:zone_id o) :changed] (fnil conj []) [o n]))))
+                  (update-in acc [(:zone o) :changed] (fnil conj []) [o n]))))
             acc
             (range (max (count orig) (count new)))))))
      {}
      (distinct (mapcat keys [drg frg])))))
 
-
-(defn init-dir
-  "(Re-)create domain files based on DNSimple records"
-  [opts]
-  (println "WARN: this will overwrite your domains files, continue? [y/n]")
-  (when (= "y" (str/trim (read-line)))
-    (let [account-id       (get-account-id)
-          dnsimple-records (map minimal-record (fetch-all-records account-id))]
-      (recreate-domain-files! "domains" dnsimple-records))))
+;;; Output formatting
 
 (defn red [& ss] (str "\u001B[31m" (apply str ss) "\u001B[0m"))
 (defn green [& ss] (str "\u001B[32m" (apply str ss) "\u001B[0m"))
@@ -245,70 +215,127 @@
     (doseq [r removed]
       (println (red "-" " " (section-str zone (:name r)) " " (render-line r))))
     (doseq [[o n] changed]
-      (println (yellow "~" " " (section-str zone (:name o)) " " (render-line o) "->" (render-line n))))
+      (println (yellow "~" " " (section-str zone (:name o)) " " (render-line o) " -> " (render-line n))))
     (doseq [r added]
       (println (green "+" " " (section-str zone (:name r)) " " (render-line r))))))
 
+;;; Commands
+
+(defn recreate-domain-files! [dir file-records-by-account]
+  (.mkdirs (io/file dir))
+  (doseq [[account-name file-records] file-records-by-account
+          :let [by-zone (group-by :zone file-records)]]
+    (doseq [[zone entries] by-zone]
+      (debug "Writing" (str (io/file dir zone)))
+      (spit (io/file dir zone)
+            (domain-file-contents account-name entries)))))
+
+(defn get-file-records-by-account [directory config]
+  (let [parsed-files (parse-domain-files directory)]
+    (reduce (fn [acc {:keys [account zone records]}]
+              (let [account-name (or account (:default config))
+                    acct-cfg      (get-account-cfg config account-name)]
+                (update acc account-name concat records)))
+            {}
+            parsed-files)))
+
+(defn init-dir
+  "Pull DNS records from providers, recreate domain files"
+  [{:keys [config] :as opts}]
+  (prn (keys (:accounts config)))
+  (prn (:verbosity opts))
+  (println "WARN: this will overwrite your domains files, continue? [y/n]")
+  (when (= "y" (str/trim (read-line)))
+    (doseq [[account-name acct-cfg] (:accounts config)]
+      (let [records (protocols/list-records acct-cfg)]
+        (recreate-domain-files! "domains" {account-name records})))))
+
 (defn show-changes
-  "Show a diff of the changes that `apply` would apply"
-  [opts]
-  (let [account-id                      (get-account-id)
-        dnsimple-records                (fetch-all-records account-id)
-        file-records                    (parse-domain-files "domains")]
-    (print-diff (diff dnsimple-records file-records))
-    ))
+  "Show a diff of the changes that apply would apply"
+  [{:keys [config]}]
+  (let [file-records-by-acct (get-file-records-by-account "domains" config)]
+    (doseq [[account-name file-records] file-records-by-acct
+            :let [acct-cfg (get-account-cfg config account-name)
+                  remote   (protocols/list-records acct-cfg)
+                  ;; only compare zones present in file records
+                  zones    (set (map :zone file-records))
+                  remote   (filter #(contains? zones (:zone %)) remote)
+                  d        (diff remote file-records)]
+            :when (seq d)]
+      (println "Account:" account-name (str "(" (:provider acct-cfg) ")"))
+      (print-diff d))))
 
 (defn apply-changes
-  "Apply changes from domain files to DNSimple"
-  [opts]
-  (let [account-id       (get-account-id)
-        dnsimple-records (fetch-all-records account-id)
-        file-records     (parse-domain-files "domains")
-        diff             (diff dnsimple-records file-records)]
+  "Apply changes from domain files to DNS providers"
+  [{:keys [config]}]
+  (let [file-records-by-acct (get-file-records-by-account "domains" config)]
     (println "Changeset:")
-    (print-diff diff)
+    (doseq [[account-name file-records] file-records-by-acct
+            :let [acct-cfg (get-account-cfg config account-name)
+                  remote   (protocols/list-records acct-cfg)
+                  zones    (set (map :zone file-records))
+                  remote   (filter #(contains? zones (:zone %)) remote)
+                  d        (diff remote file-records)]
+            :when (seq d)]
+      (println "Account:" account-name (str "(" (:provider acct-cfg) ")"))
+      (print-diff d))
     (println "Continue? [y/n]")
     (when (= "y" (str/trim (read-line)))
-      (doseq [[zone {:keys [added removed changed]}] diff]
-        (doseq [r removed]
-          (fetch [account-id "zones" zone "records" (:id r)]
-                 {:request-method :delete}))
-        (doseq [[o n] changed]
-          (fetch [account-id "zones" zone "records" (:id o)]
-                 {:request-method :patch
-                  :form-params (assoc (select-keys n [:name :content :ttl :priority]) :id (:id o))}))
-        (doseq [r added]
-          (fetch [account-id "zones" zone "records"]
-                 {:request-method :post
-                  :form-params (select-keys r [:name :type :content :ttl :priority])}))))))
+      (doseq [[account-name file-records] file-records-by-acct]
+        (let [acct-cfg (get-account-cfg config account-name)
+              remote   (protocols/list-records acct-cfg)
+              zones    (set (map :zone file-records))
+              remote   (filter #(contains? zones (:zone %)) remote)
+              d        (diff remote file-records)]
+          (doseq [[zone {:keys [added removed changed]}] d]
+            (doseq [r removed]
+              (protocols/delete-record acct-cfg r))
+            (doseq [[o n] changed]
+              (protocols/update-record acct-cfg o n))
+            (doseq [r added]
+              (protocols/create-record acct-cfg r))))))))
+
+;;; CLI
 
 (def flags
   ["-v,--verbose" {:doc "Increase verbosity"
-                   :key :verbosity}])
+                   :key :verbosity}
+   "--account <account>" {:doc "Select specific account"
+                          :coll? true}])
 
 (def commands
   ["init" #'init-dir
    "apply" #'apply-changes
    "diff" #'show-changes])
 
+(defn wrap-filter-accounts [cmd]
+  (fn [opts]
+    (cmd
+     (if-let [accounts (:account opts)]
+       (update-in opts [:config :accounts] select-keys (map keyword accounts))
+       opts))))
+
 (defn -main [& args]
   (cli/dispatch*
-   {:name     "simp"
-    :doc      "Gitops for DNSimple"
-    :init     init
-    :commands commands
-    :flags    flags}
+   {:name       "simp"
+    :doc        "Gitops for DNS"
+    :init       {:verbosity 0
+                 :config (read-config)}
+    :commands   commands
+    :flags      flags
+    :middleware [#'wrap-filter-accounts]}
    args))
 
 (comment
-  (let [account-id (get-account-id)
-        dnsimple-records (map minimal-record (fetch-all-records account-id))
-        file-records (parse-domain-files "domains")]
-    #_(recreate-domain-files! dnsimple-records)
-    #_(doseq [r (remove (set file-records) (set dnsimple-records))]
-        (println "-" (render-line r)))
-    (doseq [r (remove (set dnsimple-records) (set file-records))]
-      (println "+" (section-str (:zone_id r) (:name r)) (render-line r))
-      #_(fetch [account-id "zones" (:zone_id r) "records"]
-               {:request-method :post
-                :form-params (select-keys r [:name :content :type :ttl :priority])}))))
+  (do
+    (require 'net.arnebrasseur.simp :reload)
+    (require 'net.arnebrasseur.simp.protocols :reload)
+    (require 'net.arnebrasseur.simp.dnsimple :reload)
+    (require 'net.arnebrasseur.simp.dreamhost :reload))
+
+
+  (protocols/list-records {:provider :dnsimple :access_token "..."})
+
+  (let [config (read-config)
+        file-records-by-acct (get-file-records-by-account "domains" config)]
+    file-records-by-acct))

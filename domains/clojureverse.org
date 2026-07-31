@@ -1,0 +1,79 @@
+[simp]
+account="dreamhost"
+
+[clojureverse.org]
+MX="0 mx1.dreamhost.com."
+MX="0 mx2.dreamhost.com."
+TXT="v=spf1 mx include:netblocks.dreamhost.com include:relay.mailchannels.net -all"
+
+[_autodiscover._tcp.clojureverse.org]
+SRV="5 0 443 autoconfig.dreamhost.com"
+
+[_autodiscover._tcp.lists.clojureverse.org]
+SRV="5 0 443 autoconfig.dreamhost.com"
+
+[autoconfig.clojureverse.org]
+CNAME="autoconfig.dreamhost.com"
+
+[autoconfig.lists.clojureverse.org]
+CNAME="autoconfig.dreamhost.com"
+
+[dreamhost._domainkey.clojureverse.org]
+TXT="v=DKIM1; k=rsa; h=sha256;  p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoiSWT6M6gMel28kmDBaohsSjJ4S5tnp68y7rcUgaRPytvuAZ8v3fawsQpPYlLuvGWuGjj1PPxdnvQ2fqBv0ab3szf43j/lp7WSi9+7rl7ps5uDKHV3EYDdHhAK7t5R0g6A89poJH7ydPeTtcIi5rmDnpf9Cqe9e7ygXtTd0Qt+w42relKB+5wOyV6PutiCRcDzGjrBfNCNRMijTecSSNY2Ck4JxoI5LZz5q6+69nM/b/Yb6rQwwlAYaX5IcTdw7GZFfSYlwMAhkJWFEl1ezrSE03Vdv8lFT1gfr7PAYK776mvFhJ78Df55B+3ZJc0WcnffgUfkrGKEhoZRJe2ln98wIDAQAB"
+
+[dreamhost._domainkey.lists.clojureverse.org]
+TXT="v=DKIM1; k=rsa; h=sha256;  p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqkJQf+UxvDb7qTegnk/XEmgjy5NxMEZFANovUCtWhSEB0akpTjy77ho4BDkeHlBhknWniF6HaFNOy+SYqdgpEYc5HPzUPx3VcU1laO/fyGJlxjNCc+iLewrbf+aKsuqUollBTljimoRWYMZx+lBmI325DJVmiv9H6Mym5d5zb/TyP+cLFO5joKTYyljxdD8iEfybPXME2vW5bji4uiG4lWD6ANUpwBp0JeMIT9h7wPcU/4WqAf+9o7l3i2+9DJpAdCBL1N/W3cmpW4TKb9LiVBK+GFpojMLtUizYDlWpYTT9qBf3Fr6orRHXW/wtus3uL8rm0EPYEejrXLfqcKJZSwIDAQAB"
+
+[ftp.lists.clojureverse.org]
+A="64.90.52.223"
+
+[lists.clojureverse.org]
+A="64.90.52.223"
+MX="0 mx1.mailchannels.net."
+MX="0 mx2.mailchannels.net."
+TXT="v=spf1 mx include:netblocks.dreamhost.com include:relay.mailchannels.net -all"
+
+[mail.clojureverse.org]
+A="64.90.62.162"
+MX="0 mx1.dreamhost.com."
+MX="0 mx2.dreamhost.com."
+
+[mail.lists.clojureverse.org]
+A="64.90.62.162"
+MX="0 mx1.mailchannels.net."
+MX="0 mx2.mailchannels.net."
+
+[mailboxes.clojureverse.org]
+A="69.163.136.97"
+
+[mailboxes.lists.clojureverse.org]
+A="69.163.136.97"
+
+[ssh.lists.clojureverse.org]
+A="64.90.52.223"
+
+[webmail.clojureverse.org]
+A="69.163.136.138"
+
+[webmail.lists.clojureverse.org]
+A="69.163.136.138"
+
+[www.lists.clojureverse.org]
+A="64.90.52.223"
+
+[www.mailboxes.clojureverse.org]
+A="69.163.136.97"
+
+[www.mailboxes.lists.clojureverse.org]
+A="69.163.136.97"
+
+[www.webmail.clojureverse.org]
+A="69.163.136.138"
+
+[www.webmail.lists.clojureverse.org]
+A="69.163.136.138"
+
+
+# Local Variables:
+# mode:conf
+# End:

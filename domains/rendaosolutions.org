@@ -1,0 +1,19 @@
+[simp]
+account="dreamhost"
+
+[rendaosolutions.org]
+A="64.90.52.223"
+
+[ftp.rendaosolutions.org]
+A="64.90.52.223"
+
+[ssh.rendaosolutions.org]
+A="64.90.52.223"
+
+[www.rendaosolutions.org]
+A="64.90.52.223"
+
+
+# Local Variables:
+# mode:conf
+# End:
