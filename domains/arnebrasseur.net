@@ -59,6 +59,10 @@ A="64.90.52.223"
 [ftp.wiki.arnebrasseur.net]
 A="64.90.52.223"
 
+[hello.arnebrasseur.net]
+A="94.237.44.158"
+AAAA="2A04:3544:1000:1510:CC10:B0FF:FEE4:6455"
+
 [headscale.arnebrasseur.net]
 A="94.237.44.158"
 AAAA="2a04:3544:1000:1510:cc10:b0ff:fee4:6455"
