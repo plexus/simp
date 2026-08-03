@@ -6,6 +6,7 @@
    [lambdaisland.cli :as cli]
    [toml-clj.core :as toml]
    [net.arnebrasseur.simp.protocols :as protocols]
+   [net.arnebrasseur.simp.cloudflare]
    [net.arnebrasseur.simp.dnsimple]
    [net.arnebrasseur.simp.dreamhost])
   (:import
@@ -33,9 +34,7 @@
   (let [{:keys [accounts default]} config
         name (or (keyword account-name) account-name (keyword default))]
     (or (get accounts (keyword name))
-        (get accounts name)
-        (do (println (str "Account not found: " account-name))
-            (System/exit -1)))))
+        (get accounts name))))
 
 ;;; CLI init
 
@@ -119,47 +118,47 @@
          (update-keys keyword)
          (update-vals #(if (re-find #"^\d+$" %) (parse-long %) %))))))
 
-(defn parse-domain-file [zone]
-  (let [lines (str/split (slurp (io/file "domains" zone)) #"\R")]
+(defn parse-domain-file [file-name]
+  (let [lines (str/split (slurp (io/file "domains" file-name)) #"\R")]
     (loop [simp-meta      {}
            records        []
            section        nil
            [line & lines] lines]
-      (if-not line
-        {:account (:account simp-meta)
-         :zone    (:zone simp-meta zone)
-         :records records}
-        (cond
-          (re-find #"^(\s*|\s*#.*)$" line)
-          (recur simp-meta records section lines)
+      (let [zone (:zone simp-meta file-name)]
+        (if-not line
+          {:account (:account simp-meta)
+           :zone    zone
+           :records records}
+          (cond
+            (re-find #"^(\s*|\s*#.*)$" line)
+            (recur simp-meta records section lines)
 
-          (re-find #"^\s*\[(.*)\]\s*($|#.*$)" line)
-          (let [[_ sec-name] (re-find #"^\s*\[(.*)\]\s*($|#.*$)" line)
-                zone         (:zone simp-meta zone)]
-            (cond
-              (= "simp" sec-name)
-              (recur simp-meta records "simp" lines)
+            (re-find #"^\s*\[(.*)\]\s*($|#.*$)" line)
+            (let [[_ sec-name] (re-find #"^\s*\[(.*)\]\s*($|#.*$)" line)]
+              (cond
+                (= "simp" sec-name)
+                (recur simp-meta records "simp" lines)
 
-              (= zone sec-name)
-              (recur simp-meta records "" lines)
+                (= zone sec-name)
+                (recur simp-meta records "" lines)
 
-              :else
-              (recur simp-meta records
-                     (subs sec-name 0 (- (count sec-name) (count zone) 1))
-                     lines)))
+                :else
+                (recur simp-meta records
+                       (subs sec-name 0 (- (count sec-name) (count zone) 1))
+                       lines)))
 
-          (= section "simp")
-          (let [[_ k v] (re-find #"^\s*([a-z_]+)\s*=\s*(.*)" line)]
-            (if k
-              (recur (assoc simp-meta (keyword k) (try (read-string v) (catch Exception _ v)))
-                     records section lines)
-              (recur simp-meta records section lines)))
+            (= section "simp")
+            (let [[_ k v] (re-find #"^\s*([a-z_]+)\s*=\s*(.*)" line)]
+              (if k
+                (recur (assoc simp-meta (keyword k) (try (read-string v) (catch Exception _ v)))
+                       records section lines)
+                (recur simp-meta records section lines)))
 
-          :else
-          (recur simp-meta
-                 (conj records (assoc (parse-line line) :name section :zone zone))
-                 section
-                 lines))))))
+            :else
+            (recur simp-meta
+                   (conj records (assoc (parse-line line) :name section :zone zone))
+                   section
+                   lines)))))))
 
 (defn parse-domain-files [directory]
   (mapv #(parse-domain-file (.getName %)) (next (file-seq (io/file directory)))))
@@ -235,8 +234,7 @@
   (let [parsed-files (parse-domain-files directory)]
     (reduce (fn [acc {:keys [account zone records]}]
               (if (or (empty? zones) (some #{zone} zones))
-                (let [account-name (or account (:default config))
-                      acct-cfg      (get-account-cfg config account-name)]
+                (let [account-name (or account (:default config))]
                   (update acc account-name concat records))
                 acc))
             {}
@@ -244,22 +242,23 @@
 
 (defn init-dir
   "Pull DNS records from providers, recreate domain files"
-  [{:keys [config] :as opts}]
-  (prn (keys (:accounts config)))
-  (prn (:verbosity opts))
+  [{:keys [config zones] :as opts}]
   (println "WARN: this will overwrite your domains files, continue? [y/n]")
   (when (= "y" (str/trim (read-line)))
     (doseq [[account-name acct-cfg] (:accounts config)]
-      (let [records (protocols/list-records acct-cfg)]
-        (recreate-domain-files! "domains" {account-name records})))))
+      (let [records (protocols/list-records acct-cfg zones)]
+        (recreate-domain-files! "domains" {account-name (if (seq zones)
+                                                          (filter (comp (set zones) :zone) records)
+                                                          records)})))))
 
 (defn show-changes
   "Show a diff of the changes that apply would apply"
-  [{:keys [config zones]}]
+  [{:keys [config zones] :as opts}]
   (let [file-records-by-acct (get-file-records-by-account "domains" config zones)]
     (doseq [[account-name file-records] file-records-by-acct
+            :when (or (empty? (:account opts)) (some #{account-name} (:account opts)))
             :let [acct-cfg (get-account-cfg config account-name)
-                  remote   (protocols/list-records acct-cfg)
+                  remote   (protocols/list-records acct-cfg zones)
                   ;; only compare zones present in file records
                   zones    (set (map :zone file-records))
                   remote   (filter #(contains? zones (:zone %)) remote)
@@ -270,12 +269,13 @@
 
 (defn apply-changes
   "Apply changes from domain files to DNS providers"
-  [{:keys [config zones]}]
+  [{:keys [config zones] :as opts}]
   (let [file-records-by-acct (get-file-records-by-account "domains" config zones)]
     (println "Changeset:")
     (doseq [[account-name file-records] file-records-by-acct
+            :when (or (empty? (:account opts)) (some #{account-name} (:account opts)))
             :let [acct-cfg (get-account-cfg config account-name)
-                  remote   (protocols/list-records acct-cfg)
+                  remote   (protocols/list-records acct-cfg zones)
                   zones    (set (map :zone file-records))
                   remote   (filter #(contains? zones (:zone %)) remote)
                   d        (diff remote file-records)]
@@ -286,7 +286,7 @@
     (when (= "y" (str/trim (read-line)))
       (doseq [[account-name file-records] file-records-by-acct]
         (let [acct-cfg (get-account-cfg config account-name)
-              remote   (protocols/list-records acct-cfg)
+              remote   (protocols/list-records acct-cfg zones)
               zones    (set (map :zone file-records))
               remote   (filter #(contains? zones (:zone %)) remote)
               d        (diff remote file-records)]

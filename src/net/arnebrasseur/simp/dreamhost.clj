@@ -43,7 +43,7 @@
     (= "0" editable) (assoc :editable false)))
 
 (defmethod protocols/list-records :dreamhost
-  [{:keys [api_key]}]
+  [{:keys [api_key]} _zones]
   (let [resp (api-call api_key "dns-list_records")]
     (when (= "success" (:result resp))
       (mapv dreamhost->record (:data resp)))))

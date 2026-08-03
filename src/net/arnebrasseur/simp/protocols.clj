@@ -15,9 +15,9 @@
    [clojure.string :as str]))
 
 (defmulti list-records
-  "Fetch all DNS records from the provider.
+  "Fetch all DNS records from the provider, or a subset of zones.
   Returns a seq of normalized record maps."
-  (fn [provider-cfg & _] (:provider provider-cfg)))
+  (fn [provider-cfg zones] (:provider provider-cfg)))
 
 (defmulti create-record
   "Create a new DNS record.

@@ -1,29 +1,63 @@
+# Domain is registered with DNSimple, but delegated to Cloudflare
+# https://dnsimple.com/a/28031/domains/clojureverse.org/name_servers/edit
+# NS="elaine.ns.cloudflare.com"
+# NS="kip.ns.cloudflare.com"
+
 [simp]
-account="dreamhost"
+account="cloudflare"
+zone="clojureverse.org"
 
 [clojureverse.org]
-MX="0 mx1.dreamhost.com."
-MX="0 mx2.dreamhost.com."
-TXT="v=spf1 mx include:netblocks.dreamhost.com include:relay.mailchannels.net -all"
+A="159.100.241.171" ttl=1
+MX="mx1.balanced.homie.mail.dreamhost.com" ttl=1 priority=0
+MX="mx2.balanced.homie.mail.dreamhost.com" ttl=1 priority=0
+TXT="clojars plexus" ttl=1
 
-[_autodiscover._tcp.clojureverse.org]
-SRV="5 0 443 autoconfig.dreamhost.com"
+[_acme-challenge.clojurians-log.clojureverse.org]
+CNAME="_acme-challenge.clojurians-log.acmechallenges.clojureverse.org" ttl=1
 
-[_autodiscover._tcp.lists.clojureverse.org]
-SRV="5 0 443 autoconfig.dreamhost.com"
+[_acme-challenge.clojurians-log-staging.clojureverse.org]
+CNAME="_acme-challenge.clojurians-log-staging.acmechallenges.clojureverse.org" ttl=1
 
-[autoconfig.clojureverse.org]
-CNAME="autoconfig.dreamhost.com"
+[_dmarc.mailgun.clojureverse.org]
+TXT="v=DMARC1; p=none; pct=100; fo=1; ri=3600; rua=mailto:f64c105e@dmarc.mailgun.org,mailto:0b69e017@inbox.ondmarc.com; ruf=mailto:f64c105e@dmarc.mailgun.org,mailto:0b69e017@inbox.ondmarc.com;" ttl=1
 
-[autoconfig.lists.clojureverse.org]
-CNAME="autoconfig.dreamhost.com"
+[acmechallenges.clojureverse.org]
+NS="ns-cloud-b1.googledomains.com" ttl=1
+NS="ns-cloud-b2.googledomains.com" ttl=1
+NS="ns-cloud-b3.googledomains.com" ttl=1
+NS="ns-cloud-b4.googledomains.com" ttl=1
 
-[dreamhost._domainkey.clojureverse.org]
-TXT="v=DKIM1; k=rsa; h=sha256;  p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoiSWT6M6gMel28kmDBaohsSjJ4S5tnp68y7rcUgaRPytvuAZ8v3fawsQpPYlLuvGWuGjj1PPxdnvQ2fqBv0ab3szf43j/lp7WSi9+7rl7ps5uDKHV3EYDdHhAK7t5R0g6A89poJH7ydPeTtcIi5rmDnpf9Cqe9e7ygXtTd0Qt+w42relKB+5wOyV6PutiCRcDzGjrBfNCNRMijTecSSNY2Ck4JxoI5LZz5q6+69nM/b/Yb6rQwwlAYaX5IcTdw7GZFfSYlwMAhkJWFEl1ezrSE03Vdv8lFT1gfr7PAYK776mvFhJ78Df55B+3ZJc0WcnffgUfkrGKEhoZRJe2ln98wIDAQAB"
+[clojurians-log.clojureverse.org]
+A="51.15.25.41" ttl=1
 
-[dreamhost._domainkey.lists.clojureverse.org]
-TXT="v=DKIM1; k=rsa; h=sha256;  p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqkJQf+UxvDb7qTegnk/XEmgjy5NxMEZFANovUCtWhSEB0akpTjy77ho4BDkeHlBhknWniF6HaFNOy+SYqdgpEYc5HPzUPx3VcU1laO/fyGJlxjNCc+iLewrbf+aKsuqUollBTljimoRWYMZx+lBmI325DJVmiv9H6Mym5d5zb/TyP+cLFO5joKTYyljxdD8iEfybPXME2vW5bji4uiG4lWD6ANUpwBp0JeMIT9h7wPcU/4WqAf+9o7l3i2+9DJpAdCBL1N/W3cmpW4TKb9LiVBK+GFpojMLtUizYDlWpYTT9qBf3Fr6orRHXW/wtus3uL8rm0EPYEejrXLfqcKJZSwIDAQAB"
+[email.mailgun.clojureverse.org]
+CNAME="mailgun.org" ttl=1
 
+[internal.clojureverse.org]
+A="188.166.73.68" ttl=1
+
+[k1._domainkey.mailgun.clojureverse.org]
+TXT="k=rsa; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDFyig6QpBYKiQByhcd32wTVtRmnhL7UzUnLu9osv3KdoPaxA21Nvz0YGlvHdO58XVPCmWyUsxo7PGK4n/o3zNWKMwoo93nLp06VVOmWP3I/Y1y2+l55qkd2eI3cq8c2YmJziu1DXZIfGkcdK1cA+/VR9LnHXjsv7GvPRRiDAkFtwIDAQAB" ttl=1
+
+[landofquil.clojureverse.org]
+CNAME="d2mo3qqaqbco6f.cloudfront.net" ttl=1
+
+[lists.clojureverse.org]
+MX="mx1.balanced.homie.mail.dreamhost.com" ttl=1 priority=0
+MX="mx2.balanced.homie.mail.dreamhost.com" ttl=1 priority=0
+
+[mailgun.clojureverse.org]
+MX="mx1.balanced.homie.mail.dreamhost.com" ttl=1 priority=0
+MX="mx2.balanced.homie.mail.dreamhost.com" ttl=1 priority=0
+TXT="v=spf1 include:mailgun.org ~all" ttl=1
+
+[slack-event-sink.clojureverse.org]
+A="51.15.25.41" ttl=60
+
+[v2.clojureverse.org]
+A="51.15.249.234" ttl=60
+AAAA="2001:bc8:711:75db:dc00:1ff:fe27:85b3" ttl=60
 
 # Local Variables:
 # mode:conf

@@ -59,17 +59,19 @@
       (:priority entry) (assoc :priority (:priority entry)))))
 
 (defmethod protocols/list-records :dnsimple
-  [{:keys [access_token]}]
+  [{:keys [access_token]} zones]
   (let [account-id (get-account-id access_token)]
     (reduce
      (fn [acc {zone-id :id zone-name :name}]
-       (reduce
-        (fn [acc entry]
-          (if-let [record (dnsimple->record entry)]
-            (conj acc record)
-            acc))
-        acc
-        (fetch-coll access_token [account-id "zones" zone-id "records"])))
+       (if (and (seq zones) (not (some #{zone-name} zones)))
+         acc
+         (reduce
+          (fn [acc entry]
+            (if-let [record (dnsimple->record entry)]
+              (conj acc record)
+              acc))
+          acc
+          (fetch-coll access_token [account-id "zones" zone-name "records"]))))
      []
      (fetch-coll access_token [account-id "zones"]))))
 
