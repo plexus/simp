@@ -121,20 +121,21 @@
 
 (defn parse-domain-file [zone]
   (let [lines (str/split (slurp (io/file "domains" zone)) #"\R")]
-    (loop [simp-meta {}
-           records []
-           section nil
+    (loop [simp-meta      {}
+           records        []
+           section        nil
            [line & lines] lines]
       (if-not line
         {:account (:account simp-meta)
-         :zone    zone
+         :zone    (:zone simp-meta zone)
          :records records}
         (cond
           (re-find #"^(\s*|\s*#.*)$" line)
           (recur simp-meta records section lines)
 
           (re-find #"^\s*\[(.*)\]\s*($|#.*$)" line)
-          (let [[_ sec-name] (re-find #"^\s*\[(.*)\]\s*($|#.*$)" line)]
+          (let [[_ sec-name] (re-find #"^\s*\[(.*)\]\s*($|#.*$)" line)
+                zone         (:zone simp-meta zone)]
             (cond
               (= "simp" sec-name)
               (recur simp-meta records "simp" lines)
@@ -230,12 +231,14 @@
       (spit (io/file dir zone)
             (domain-file-contents account-name entries)))))
 
-(defn get-file-records-by-account [directory config]
+(defn get-file-records-by-account [directory config zones]
   (let [parsed-files (parse-domain-files directory)]
     (reduce (fn [acc {:keys [account zone records]}]
-              (let [account-name (or account (:default config))
-                    acct-cfg      (get-account-cfg config account-name)]
-                (update acc account-name concat records)))
+              (if (or (empty? zones) (some #{zone} zones))
+                (let [account-name (or account (:default config))
+                      acct-cfg      (get-account-cfg config account-name)]
+                  (update acc account-name concat records))
+                acc))
             {}
             parsed-files)))
 
@@ -252,8 +255,8 @@
 
 (defn show-changes
   "Show a diff of the changes that apply would apply"
-  [{:keys [config]}]
-  (let [file-records-by-acct (get-file-records-by-account "domains" config)]
+  [{:keys [config zones]}]
+  (let [file-records-by-acct (get-file-records-by-account "domains" config zones)]
     (doseq [[account-name file-records] file-records-by-acct
             :let [acct-cfg (get-account-cfg config account-name)
                   remote   (protocols/list-records acct-cfg)
@@ -267,8 +270,8 @@
 
 (defn apply-changes
   "Apply changes from domain files to DNS providers"
-  [{:keys [config]}]
-  (let [file-records-by-acct (get-file-records-by-account "domains" config)]
+  [{:keys [config zones]}]
+  (let [file-records-by-acct (get-file-records-by-account "domains" config zones)]
     (println "Changeset:")
     (doseq [[account-name file-records] file-records-by-acct
             :let [acct-cfg (get-account-cfg config account-name)
@@ -301,7 +304,10 @@
   ["-v,--verbose" {:doc "Increase verbosity"
                    :key :verbosity}
    "--account <account>" {:doc "Select specific account"
-                          :coll? true}])
+                          :coll? true}
+   "-z,--zone <zone>"  {:doc "Select specific zone"
+                        :key :zones
+                        :coll? true}])
 
 (def commands
   ["init" #'init-dir
@@ -325,17 +331,3 @@
     :flags      flags
     :middleware [#'wrap-filter-accounts]}
    args))
-
-(comment
-  (do
-    (require 'net.arnebrasseur.simp :reload)
-    (require 'net.arnebrasseur.simp.protocols :reload)
-    (require 'net.arnebrasseur.simp.dnsimple :reload)
-    (require 'net.arnebrasseur.simp.dreamhost :reload))
-
-
-  (protocols/list-records {:provider :dnsimple :access_token "..."})
-
-  (let [config (read-config)
-        file-records-by-acct (get-file-records-by-account "domains" config)]
-    file-records-by-acct))
