@@ -8,10 +8,10 @@ account="cloudflare"
 zone="clojureverse.org"
 
 [clojureverse.org]
-A="159.100.241.171" ttl=1
+A="51.15.249.234" ttl=60
+AAAA="2001:bc8:711:75db:dc00:1ff:fe27:85b3" ttl=60
 MX="mx1.balanced.homie.mail.dreamhost.com" ttl=1 priority=0
 MX="mx2.balanced.homie.mail.dreamhost.com" ttl=1 priority=0
-TXT="clojars plexus" ttl=1
 
 [_acme-challenge.clojurians-log.clojureverse.org]
 CNAME="_acme-challenge.clojurians-log.acmechallenges.clojureverse.org" ttl=1
@@ -54,10 +54,6 @@ TXT="v=spf1 include:mailgun.org ~all" ttl=1
 
 [slack-event-sink.clojureverse.org]
 A="51.15.25.41" ttl=60
-
-[v2.clojureverse.org]
-A="51.15.249.234" ttl=60
-AAAA="2001:bc8:711:75db:dc00:1ff:fe27:85b3" ttl=60
 
 # Local Variables:
 # mode:conf

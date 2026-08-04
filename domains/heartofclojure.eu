@@ -11,16 +11,6 @@ TXT="ALIAS for heartofclojure.github.io"
 ALIAS="heartofclojure.github.io"
 TXT="ALIAS for heartofclojure.github.io"
 
-[activities.heartofclojure.eu]
-CNAME="enigmatic-stonecrop-uvg52hkj555vfg37hwet3djp.herokudns.com"
-
-[cfp.heartofclojure.eu]
-CNAME="cfp.apps.gaiwan.co" ttl=60
-
-[compass.heartofclojure.eu]
-A="159.100.242.109" ttl=600
-AAAA="2a04:c43:e00:5d3b:4f6:2cff:fe00:612"
-
 [email.mailgun.heartofclojure.eu]
 CNAME="mailgun.org"
 
