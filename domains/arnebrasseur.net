@@ -63,11 +63,9 @@ A="64.90.52.223"
 [hello.arnebrasseur.net]
 A="94.237.44.158"
 AAAA="2A04:3544:1000:1510:CC10:B0FF:FEE4:6455"
-
 [filebak.arnebrasseur.net]
 A="94.237.44.158"
 AAAA="2A04:3544:1000:1510:CC10:B0FF:FEE4:6455"
-
 [headscale.arnebrasseur.net]
 A="94.237.44.158"
 AAAA="2a04:3544:1000:1510:cc10:b0ff:fee4:6455"
@@ -149,7 +147,17 @@ A="69.163.136.138"
 [www.wiki.arnebrasseur.net]
 A="64.90.52.223"
 
+# Lettermint
+[_dmarc.arnebrasseur.net] 
+TXT="v=DMARC1;p=none"
+[lettermint._domainkey.arnebrasseur.net]
+TXT="v=DKIM1;k=rsa;p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAs8ZAohRTRRiDQy/7m7549UKjlbgQW+1nga5EMfI4AJppcmm86dGIbRMXTzmcQ0v++Q0mTLyEjFJW1+fBRQ+elxtstA8IKqAy6ThFoh8ZGp6DMMWYn/lwyTRs1wOE3nheVtwsuDf1QI95lcN9Un11wsUh65YL3WYsoGDazhSxeMeh1zgca157Dsw+ouPvJstTOjo0EtqrDWPvOYHIq3ndX/n9M3fFAz6fb7+t/o8nmNU+7q/YjcvI6x8uV8T0C63/B7MJd6U5q/FAmswdojyykTY+CK+rh8nL5Vg32NDFprG0RYiVIVeTq6rLFmSp9x5/Tlya5MkZukJv+gVqyNFg0QIDAQAB"
+[lm-bounces.arnebrasseur.net]
+CNAME="bounces.lmta.net."
+
 
 # Local Variables:
 # mode:conf
 # End:
+
+

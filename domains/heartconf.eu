@@ -1,6 +1,22 @@
 [heartconf.eu]
-TXT="clojars plexus"
+A="94.237.44.158" # haven-hub
+AAAA="2A04:3544:1000:1510:CC10:B0FF:FEE4:6455"
 
 [2027.heartconf.eu]
 # https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site
 CNAME="heartconf.github.io"
+
+#Lettermint
+[_dmarc.heartconf.eu]
+TXT="v=DMARC1;p=none"
+[lettermint._domainkey.heartconf.eu]
+TXT="v=DKIM1;k=rsa;p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAz049pVQVlnJ1rpVoxYI9bcDMQIF2iczEhKPKBxtSh770vLiNM3bFXPTVd5+7CLjePOp4tEm071FLefKtUcqxtB9dlMP2ys70CK+yYFXnhYnkW1UVl2jxu9MYRuIqMqEXDFkZ/7ayfTtRZuELpxA34TxI056rKxBn9lnmH4C6Da40P5RDELFxY+z4MWleyBqZgAr6+P30MANPNzRTsWIfIziPZUv8fiLnJzW5XFk0nJqL3JDVNA5MqEawepuJm1IUF+Tvzp03Z1juCBBeDSEmIsH0WqHY17LKY/SGCVuQl17boTTkZnxqBbqY0kcUqwT6c7eXvpS4gnd7wfNHG6k5FwIDAQAB"
+[lm-bounces.heartconf.eu]
+CNAME="bounces.lmta.net"
+#/Lettermint
+
+
+
+# Local Variables:
+# mode:conf
+# End:

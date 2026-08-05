@@ -100,7 +100,8 @@
 ;;; Domain file parsing
 
 (defn parse-line [line]
-  (let [[_ type rest] (re-find #"([A-Z]+)=(.*)" line)
+  (let [line          (str/trim (str/replace line #"#.*" ""))
+        [_ type rest] (re-find #"^([A-Z]+)=(.*)" line)
         rdr           (java.io.PushbackReader. (java.io.StringReader. rest))
         content       (read rdr)
         rest          (first (.toList (.lines (java.io.BufferedReader. rdr))))
@@ -108,7 +109,6 @@
                         (into {}
                               (map #(str/split % #"="))
                               (-> rest
-                                  (str/replace #"#.*" "")
                                   str/trim
                                   (str/split #"\s+"))))]
     (into
