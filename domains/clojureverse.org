@@ -13,44 +13,38 @@ AAAA="2001:bc8:711:75db:dc00:1ff:fe27:85b3" ttl=60
 MX="mx1.balanced.homie.mail.dreamhost.com" ttl=1 priority=0
 MX="mx2.balanced.homie.mail.dreamhost.com" ttl=1 priority=0
 
-[_acme-challenge.clojurians-log.clojureverse.org]
-CNAME="_acme-challenge.clojurians-log.acmechallenges.clojureverse.org" ttl=1
+# Lettermint
+[_dmarc.clojureverse.org]
+TXT="v=DMARC1;p=none" ttl=1
 
-[_acme-challenge.clojurians-log-staging.clojureverse.org]
-CNAME="_acme-challenge.clojurians-log-staging.acmechallenges.clojureverse.org" ttl=1
+[lm-bounces.clojureverse.org]
+CNAME="bounces.lmta.net" ttl=1
 
-[_dmarc.mailgun.clojureverse.org]
-TXT="v=DMARC1; p=none; pct=100; fo=1; ri=3600; rua=mailto:f64c105e@dmarc.mailgun.org,mailto:0b69e017@inbox.ondmarc.com; ruf=mailto:f64c105e@dmarc.mailgun.org,mailto:0b69e017@inbox.ondmarc.com;" ttl=1
+[lm1._domainkey.clojureverse.org]
+CNAME="lm1.lcqnpfthpcijqdtg3cps5rh6zq.dkim.lmta.net" ttl=1
 
+[lm2._domainkey.clojureverse.org]
+CNAME="lm2.lcqnpfthpcijqdtg3cps5rh6zq.dkim.lmta.net" ttl=1
+
+# ACME
 [acmechallenges.clojureverse.org]
 NS="ns-cloud-b1.googledomains.com" ttl=1
 NS="ns-cloud-b2.googledomains.com" ttl=1
 NS="ns-cloud-b3.googledomains.com" ttl=1
 NS="ns-cloud-b4.googledomains.com" ttl=1
 
+[_acme-challenge.clojurians-log.clojureverse.org]
+CNAME="_acme-challenge.clojurians-log.acmechallenges.clojureverse.org" ttl=1
+
+[_acme-challenge.clojurians-log-staging.clojureverse.org]
+CNAME="_acme-challenge.clojurians-log-staging.acmechallenges.clojureverse.org" ttl=1
+
+# Subdomains
 [clojurians-log.clojureverse.org]
 A="51.15.25.41" ttl=1
 
-[email.mailgun.clojureverse.org]
-CNAME="mailgun.org" ttl=1
-
-[internal.clojureverse.org]
-A="188.166.73.68" ttl=1
-
-[k1._domainkey.mailgun.clojureverse.org]
-TXT="k=rsa; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDFyig6QpBYKiQByhcd32wTVtRmnhL7UzUnLu9osv3KdoPaxA21Nvz0YGlvHdO58XVPCmWyUsxo7PGK4n/o3zNWKMwoo93nLp06VVOmWP3I/Y1y2+l55qkd2eI3cq8c2YmJziu1DXZIfGkcdK1cA+/VR9LnHXjsv7GvPRRiDAkFtwIDAQAB" ttl=1
-
 [landofquil.clojureverse.org]
 CNAME="d2mo3qqaqbco6f.cloudfront.net" ttl=1
-
-[lists.clojureverse.org]
-MX="mx1.balanced.homie.mail.dreamhost.com" ttl=1 priority=0
-MX="mx2.balanced.homie.mail.dreamhost.com" ttl=1 priority=0
-
-[mailgun.clojureverse.org]
-MX="mx1.balanced.homie.mail.dreamhost.com" ttl=1 priority=0
-MX="mx2.balanced.homie.mail.dreamhost.com" ttl=1 priority=0
-TXT="v=spf1 include:mailgun.org ~all" ttl=1
 
 [slack-event-sink.clojureverse.org]
 A="51.15.25.41" ttl=60
