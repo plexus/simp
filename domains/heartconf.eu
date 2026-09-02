@@ -8,9 +8,6 @@ MX="mx2.balanced.homie.mail.dreamhost.com" ttl=1 priority=0
 # https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site
 CNAME="heartconf.github.io"
 
-[mail.heartconf.eu]
-NS="ns1.dreamhost.com"
-
 #Lettermint
 [_dmarc.heartconf.eu]
 TXT="v=DMARC1;p=none"
