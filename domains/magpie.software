@@ -3,6 +3,16 @@ ALIAS="plexus.github.io"
 MX="mx1.mailchannels.net" priority=10
 MX="mx2.mailchannels.net" priority=10
 
+# alias for conj2026.confpass.me
+[compass2.magpie.software]
+A="94.237.4.178" ttl=60
+AAAA="2a04:3544:1000:1510:cc10:b0ff:fee4:55" ttl=60
+
+# alias for backup.confpass.me
+[compass3.magpie.software]
+A="62.210.237.134" ttl=60
+AAAA="2001:bc8:1210:e356:dc00:ff:fe83:c47e" ttl=60
+
 
 # Local Variables:
 # mode:conf
