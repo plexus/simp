@@ -16,7 +16,7 @@ AAAA="2001:bc8:1210:e356:dc00:ff:fe83:c47e" ttl=60
 # haven-hub vhosts
 [ntfy.magpie.software]
 A="94.237.44.158"
-AAAA="2A04:3544:1000:1510:CC10:B0FF:FEE4:6455"
+AAAA="2a04:3544:1000:1510:cc10:b0ff:fee4:6455"
 
 [heartconf1.magpie.software]
 A="80.47.229.22"
