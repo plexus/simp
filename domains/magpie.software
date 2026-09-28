@@ -18,6 +18,10 @@ AAAA="2001:bc8:1210:e356:dc00:ff:fe83:c47e" ttl=60
 A="94.237.44.158"
 AAAA="2A04:3544:1000:1510:CC10:B0FF:FEE4:6455"
 
+[heartconf1.magpie.software]
+A="80.47.229.22"
+AAAA="2a04:3542:1000:910:cc10:b0ff:fee4:4950"
+
 # Local Variables:
 # mode:conf
 # End:
