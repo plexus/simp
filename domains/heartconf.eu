@@ -21,6 +21,9 @@ CNAME="bounces.lmta.net"
 A="80.47.229.22"
 AAAA="2a04:3542:1000:910:cc10:b0ff:fee4:4950"
 
+[cfp.heartconf.eu]
+A="80.47.229.22"
+AAAA="2a04:3542:1000:910:cc10:b0ff:fee4:4950"
 
 # Local Variables:
 # mode:conf
